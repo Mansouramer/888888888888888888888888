@@ -21,7 +21,6 @@
             backdrop-filter: blur(8px);
             transform: translateZ(0);
         }
-        /* تعديلات الجوال ومنع الخروج للأعمدة */
         body {
             overflow-x: hidden;
         }
@@ -431,7 +430,7 @@
         </div>
     </div>
 
-    <!-- السكريبت البرمجي كما هو دون تعديل المنطق -->
+    <!-- السكريبت البرمجي -->
     <script>
         const schoolConfig = {
             schoolName: "مدرسة داوود بن عروة الثقفي",
@@ -1085,12 +1084,13 @@
                             <thead>
                                 <tr class="bg-orange-600 text-white text-xs sm:text-sm">
                                     <th class="p-3 text-center border-l w-12">م</th>
-                                    <th class="p-3 border-l">عناصر التقييم</th>
+                                    <!-- تم جعل عمود عناصر التقييم أولاً وبعرض مريح لمنع الاقتطاع -->
+                                    <th class="p-3 border-l min-w-[200px]">عناصر التقييم</th>
                                     <th class="p-3 text-center border-l w-20">الوزن النسبي</th>
-                                    <th class="p-3 border-l">أمثلة على تحقق العنصر</th>
+                                    <th class="p-3 border-l min-w-[220px]">أمثلة على تحقق العنصر</th>
                                     ${teachersPerformanceData.map((t, idx) => {
                                         if(searchVal && !t.name.toLowerCase().includes(searchVal)) return '';
-                                        return `<th class="p-3 text-center border-l bg-orange-700">
+                                        return `<th class="p-3 text-center border-l bg-orange-700 min-w-[120px]">
                                             <div class="flex flex-col items-center gap-1">
                                                 <span>${t.name}</span>
                                                 <button onclick="deleteTeacher(${idx})" class="text-[10px] bg-red-500 hover:bg-red-600 text-white px-1.5 py-0.5 rounded">حذف</button>
@@ -1106,7 +1106,7 @@
                     html += `
                         <tr class="hover:bg-gray-50 transition">
                             <td class="p-3 text-center border-l font-bold text-gray-600">${crit.id}</td>
-                            <td class="p-3 border-l font-semibold text-gray-800">${crit.title}</td>
+                            <td class="p-3 border-l font-semibold text-gray-800 whitespace-nowrap sm:whitespace-normal">${crit.title}</td>
                             <td class="p-3 text-center border-l font-mono font-bold text-orange-600">${crit.weight}</td>
                             <td class="p-3 border-l text-gray-600 text-[11px] leading-relaxed">${crit.examples}</td>
                     `;
@@ -1606,7 +1606,7 @@
                 } else if(currentSection === 'programs') {
                     programs[editingIndex].title = title; programs[editingIndex].category = category; programs[editingIndex].date = date; programs[editingIndex].images = finalImages;
                 } else {
-                    readinessData[currentSection].tasks[editingIndex].desc = title; readinessData[currentSection].tasks[editingIndex].date = date; readinessData[currentSection].tasks[editingIndex].images = finalImages;
+                    readinessData[currentSection].tasks[editingIndex].desc = title; readinessData[currentSection].tasks[editingIndex].date = date; readinessData[currentSection].tasks[editingIndex].images = finalTitles;
                 }
             } else {
                 if(currentSection === 'principal') {
@@ -1618,7 +1618,7 @@
                 } else if(currentSection === 'schoolAffairs') {
                     schoolAffairsRecordsData.unshift({ id: schoolAffairsRecordsData.length + 1, title, category, date, executed: true, images: finalImages });
                 } else if(currentSection === 'eduAffairs') {
-                    eduAffairsRecordsData.unshift({ id: eduAffairsRecordsData.length + 1, title, category, date, executed: true, images: finalImages });
+                    eduAffairsRecordsData.unshift({ id: eduAffairsRecordsData.length + 1, title, category, date, executed: true, images: finalNames });
                 } else if(currentSection === 'counselor') {
                     counselorRecordsData.unshift({ id: counselorRecordsData.length + 1, title, category, date, executed: true, images: finalImages });
                 } else if(currentSection === 'studentAffairs') {
