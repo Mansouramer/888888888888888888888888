@@ -21,6 +21,7 @@
             backdrop-filter: blur(8px);
             transform: translateZ(0);
         }
+        /* تعديلات الجوال ومنع الخروج للأعمدة */
         body {
             overflow-x: hidden;
         }
@@ -430,7 +431,7 @@
         </div>
     </div>
 
-    <!-- السكريبت البرمجي -->
+    <!-- السكريبت البرمجي كما هو دون تعديل المنطق -->
     <script>
         const schoolConfig = {
             schoolName: "مدرسة داوود بن عروة الثقفي",
@@ -1079,18 +1080,17 @@
                         </div>
                     </div>
 
-                    <!-- تصميم جدول متجاوب واحترافي يمنع قص النصوص تماماً -->
                     <div class="overflow-x-auto w-full">
-                        <table class="w-full text-right border-collapse min-w-[950px] bg-white rounded-xl shadow-sm border border-gray-200">
+                        <table class="w-full text-right border-collapse min-w-[900px] bg-white rounded-xl shadow-sm border border-gray-200">
                             <thead>
                                 <tr class="bg-orange-600 text-white text-xs sm:text-sm">
                                     <th class="p-3 text-center border-l w-12">م</th>
-                                    <th class="p-3 border-l min-w-[220px]">عناصر التقييم</th>
+                                    <th class="p-3 border-l">عناصر التقييم</th>
                                     <th class="p-3 text-center border-l w-20">الوزن النسبي</th>
-                                    <th class="p-3 border-l min-w-[280px]">أمثلة على تحقق العنصر</th>
+                                    <th class="p-3 border-l">أمثلة على تحقق العنصر</th>
                                     ${teachersPerformanceData.map((t, idx) => {
                                         if(searchVal && !t.name.toLowerCase().includes(searchVal)) return '';
-                                        return `<th class="p-3 text-center border-l bg-orange-700 min-w-[130px]">
+                                        return `<th class="p-3 text-center border-l bg-orange-700">
                                             <div class="flex flex-col items-center gap-1">
                                                 <span>${t.name}</span>
                                                 <button onclick="deleteTeacher(${idx})" class="text-[10px] bg-red-500 hover:bg-red-600 text-white px-1.5 py-0.5 rounded">حذف</button>
@@ -1105,17 +1105,17 @@
                 evaluationCriteriaList.forEach((crit) => {
                     html += `
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="p-3 text-center border-l font-bold text-gray-600 align-top">${crit.id}</td>
-                            <td class="p-3 border-l font-bold text-gray-900 leading-normal align-top">${crit.title}</td>
-                            <td class="p-3 text-center border-l font-mono font-bold text-orange-600 align-top">${crit.weight}</td>
-                            <td class="p-3 border-l text-gray-600 text-[11px] sm:text-xs leading-relaxed align-top">${crit.examples}</td>
+                            <td class="p-3 text-center border-l font-bold text-gray-600">${crit.id}</td>
+                            <td class="p-3 border-l font-semibold text-gray-800">${crit.title}</td>
+                            <td class="p-3 text-center border-l font-mono font-bold text-orange-600">${crit.weight}</td>
+                            <td class="p-3 border-l text-gray-600 text-[11px] leading-relaxed">${crit.examples}</td>
                     `;
 
                     teachersPerformanceData.forEach((t, tIdx) => {
                         if(searchVal && !t.name.toLowerCase().includes(searchVal)) return;
                         const isChecked = t.evaluations[crit.id] || false;
                         html += `
-                            <td class="p-3 text-center border-l align-middle">
+                            <td class="p-3 text-center border-l">
                                 <button onclick="toggleTeacherEval(${tIdx}, ${crit.id})" class="px-3 py-1.5 rounded-xl font-bold text-xs transition ${isChecked ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}">
                                     ${isChecked ? '✓ متحقق' : 'غير متحقق'}
                                 </button>
@@ -1143,7 +1143,7 @@
                     });
                     let grade = score >= 90 ? 'ممتاز (5)' : (score >= 80 ? 'جيد جداً (4)' : (score >= 70 ? 'جيد (3)' : 'مرضي / يحتاج تحسين'));
                     html += `
-                        <td class="p-3 text-center border-l font-bold text-indigo-700 align-middle">
+                        <td class="p-3 text-center border-l font-bold text-indigo-700">
                             <div>${score}%</div>
                             <span class="text-[10px] text-gray-500 font-normal">${grade}</span>
                         </td>
