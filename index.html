@@ -361,7 +361,7 @@
                     <input type="date" id="inputDate" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
                 </div>
                 <div class="border-t pt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">📸 شواهد السجل (سيتم رفعها مباشرة إلى Google Drive)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">📸 شواهد السجل (عدة تقارير وصور مع تاريخ الإضافة)</label>
                     <div class="flex items-center gap-4">
                         <label class="cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-2 shadow-sm">
                             <span>📁 اختر صور/تقارير</span>
@@ -373,7 +373,7 @@
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl text-sm text-gray-500 hover:bg-gray-100 transition">إلغاء</button>
-                    <button type="submit" id="saveBtnSubmit" class="px-5 py-2 rounded-xl text-sm bg-blue-600 text-white hover:bg-blue-700 transition">حفظ التغييرات</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm bg-blue-600 text-white hover:bg-blue-700 transition">حفظ التغييرات</button>
                 </div>
             </form>
         </div>
@@ -417,7 +417,7 @@
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t">
                     <button type="button" onclick="closeAddProgramModal()" class="px-4 py-2 rounded-xl text-sm text-gray-500 hover:bg-gray-100 transition">إلغاء</button>
-                    <button type="submit" id="saveProgBtnSubmit" class="px-5 py-2 rounded-xl text-sm bg-emerald-600 text-white hover:bg-emerald-700 transition">حفظ البرنامج</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm bg-emerald-600 text-white hover:bg-emerald-700 transition">حفظ البرنامج</button>
                 </div>
             </form>
         </div>
@@ -444,9 +444,6 @@
         let editingIndex = null;
         let currentImagesList = [];
         let progImagesList = [];
-
-        // رابط جوجل درايف الخاص بك المربوط بالوسيط البرمجي
-        const GOOGLE_DRIVE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw8QPqZkBYo7V2nMQFkPWJXtm-tQOTgMI5pcxIqqa0-JK78LFIdE6WQ9aCaLBXhZpVA/exec';
 
         let teachersPerformanceData = [
             {
@@ -1480,132 +1477,76 @@
             document.getElementById('itemModal').classList.remove('flex');
         }
 
-        // دالة مساعدة لرفع الشواهد مباشرة لجوجل درايف عبر الـ Web App
-        async function uploadImagesToGoogleDrive(imagesArray, sectionName) {
-            let updatedList = [];
-            for (let imgObj of imagesArray) {
-                // إذا كانت الصورة قد رُفعت مسبقاً ولديها رابط درايف، لا داعي لرفعها مرة أخرى
-                if (imgObj.src && imgObj.src.startsWith('https://')) {
-                    updatedList.push(imgObj);
-                    continue;
-                }
-                try {
-                    const base64Data = imgObj.src.includes(',') ? imgObj.src.split(',')[1] : imgObj.src;
-                    const mimeType = imgObj.src.match(/data:(.*?);base64/) ? imgObj.src.match(/data:(.*?);base64/)[1] : 'image/jpeg';
-                    const fileName = 'evidence_' + Date.now() + '.jpg';
-
-                    const response = await fetch(GOOGLE_DRIVE_WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            section: sectionName || currentSection,
-                            fileName: fileName,
-                            mimeType: mimeType,
-                            base64Data: base64Data
-                        })
-                    });
-                    const result = await response.json();
-                    if (result.status === 'success') {
-                        updatedList.push({ src: result.url, date: imgObj.date });
-                    } else {
-                        updatedList.push(imgObj); // في حال الخطأ يتم الإبقاء على الصورة محلياً
-                    }
-                } catch (err) {
-                    console.error("خطأ أثناء رفع الشاهد إلى Google Drive:", err);
-                    updatedList.push(imgObj);
-                }
-            }
-            return updatedList;
-        }
-
-        async function saveNewProgram(e) {
+        function saveNewProgram(e) {
             e.preventDefault();
-            const submitBtn = document.getElementById('saveProgBtnSubmit');
-            submitBtn.innerText = 'جاري الرفع لـ Google Drive... ⏳';
-            submitBtn.disabled = true;
-
             const title = document.getElementById('progTitle').value;
             const category = document.getElementById('progCategory').value;
             const date = document.getElementById('progDate').value;
             const status = document.getElementById('progStatus').value;
 
-            // رفع الشواهد إلى Google Drive قبل الحفظ
-            let finalDriveImages = await uploadImagesToGoogleDrive(progImagesList, 'البرامج المنفذة');
-
-            programs.unshift({ title, category, date, status, images: finalDriveImages });
-            
-            submitBtn.innerText = 'حفظ البرنامج';
-            submitBtn.disabled = false;
+            programs.unshift({ title, category, date, status, images: progImagesList });
             closeAddProgramModal();
             switchSection('programs');
         }
 
-        async function saveItem(e) {
+        function saveItem(e) {
             e.preventDefault();
-            const submitBtn = document.getElementById('saveBtnSubmit');
-            submitBtn.innerText = 'جاري الرفع لـ Google Drive... ⏳';
-            submitBtn.disabled = true;
-
             const title = document.getElementById('inputTitle').value;
             const category = document.getElementById('inputCategory').value || 'عام';
             const date = document.getElementById('inputDate').value;
 
-            // رفع الشواهد إلى Google Drive قبل الحفظ النهائي
-            let finalDriveImages = await uploadImagesToGoogleDrive(currentImagesList, currentSection);
-
             if(editingIndex !== null) {
                 if(currentSection === 'principal') {
-                    principalRecordsData[editingIndex].title = title; principalRecordsData[editingIndex].category = category; principalRecordsData[editingIndex].date = date; principalRecordsData[editingIndex].images = finalDriveImages;
+                    principalRecordsData[editingIndex].title = title; principalRecordsData[editingIndex].category = category; principalRecordsData[editingIndex].date = date; principalRecordsData[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'professionalDev') {
-                    professionalDevRecordsData[editingIndex].title = title; professionalDevRecordsData[editingIndex].category = category; professionalDevRecordsData[editingIndex].date = date; professionalDevRecordsData[editingIndex].images = finalDriveImages;
+                    professionalDevRecordsData[editingIndex].title = title; professionalDevRecordsData[editingIndex].category = category; professionalDevRecordsData[editingIndex].date = date; professionalDevRecordsData[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'teacherPerfRecords') {
-                    teacherPerfRecordsData[editingIndex].title = title; teacherPerfRecordsData[editingIndex].category = category; teacherPerfRecordsData[editingIndex].date = date; teacherPerfRecordsData[editingIndex].images = finalDriveImages;
+                    teacherPerfRecordsData[editingIndex].title = title; teacherPerfRecordsData[editingIndex].category = category; teacherPerfRecordsData[editingIndex].date = date; teacherPerfRecordsData[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'schoolAffairs') {
-                    schoolAffairsRecordsData[editingIndex].title = title; schoolAffairsRecordsData[editingIndex].category = category; schoolAffairsRecordsData[editingIndex].date = date; schoolAffairsRecordsData[editingIndex].images = finalDriveImages;
+                    schoolAffairsRecordsData[editingIndex].title = title; schoolAffairsRecordsData[editingIndex].category = category; schoolAffairsRecordsData[editingIndex].date = date; schoolAffairsRecordsData[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'eduAffairs') {
-                    eduAffairsRecordsData[editingIndex].title = title; eduAffairsRecordsData[editingIndex].category = category; eduAffairsRecordsData[editingIndex].date = date; eduAffairsRecordsData[editingIndex].images = finalDriveImages;
+                    eduAffairsRecordsData[editingIndex].title = title; eduAffairsRecordsData[editingIndex].category = category; eduAffairsRecordsData[editingIndex].date = date; eduAffairsRecordsData[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'counselor') {
-                    counselorRecordsData[editingIndex].title = title; counselorRecordsData[editingIndex].category = category; counselorRecordsData[editingIndex].date = date; counselorRecordsData[editingIndex].images = finalDriveImages;
+                    counselorRecordsData[editingIndex].title = title; counselorRecordsData[editingIndex].category = category; counselorRecordsData[editingIndex].date = date; counselorRecordsData[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'studentAffairs') {
-                    studentAffairsRecordsData[editingIndex].title = title; studentAffairsRecordsData[editingIndex].category = category; studentAffairsRecordsData[editingIndex].date = date; studentAffairsRecordsData[editingIndex].images = finalDriveImages;
+                    studentAffairsRecordsData[editingIndex].title = title; studentAffairsRecordsData[editingIndex].category = category; studentAffairsRecordsData[editingIndex].date = date; studentAffairsRecordsData[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'evalSpecialist') {
-                    evalSpecialistRecordsData[editingIndex].title = title; evalSpecialistRecordsData[editingIndex].category = category; evalSpecialistRecordsData[editingIndex].date = date; evalSpecialistRecordsData[editingIndex].images = finalDriveImages;
+                    evalSpecialistRecordsData[editingIndex].title = title; evalSpecialistRecordsData[editingIndex].category = category; evalSpecialistRecordsData[editingIndex].date = date; evalSpecialistRecordsData[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'records') {
-                    records[editingIndex].title = title; records[editingIndex].category = category; records[editingIndex].date = date; records[editingIndex].images = finalDriveImages;
+                    records[editingIndex].title = title; records[editingIndex].category = category; records[editingIndex].date = date; records[editingIndex].images = currentImagesList;
                 } else if(currentSection === 'programs') {
-                    programs[editingIndex].title = title; programs[editingIndex].category = category; programs[editingIndex].date = date; programs[editingIndex].images = finalDriveImages;
+                    programs[editingIndex].title = title; programs[editingIndex].category = category; programs[editingIndex].date = date; programs[editingIndex].images = currentImagesList;
                 } else {
-                    readinessData[currentSection].tasks[editingIndex].desc = title; readinessData[currentSection].tasks[editingIndex].date = date; readinessData[currentSection].tasks[editingIndex].images = finalDriveImages;
+                    readinessData[currentSection].tasks[editingIndex].desc = title; readinessData[currentSection].tasks[editingIndex].date = date; readinessData[currentSection].tasks[editingIndex].images = currentImagesList;
                 }
             } else {
                 if(currentSection === 'principal') {
-                    principalRecordsData.unshift({ id: principalRecordsData.length + 1, title, category, date, executed: true, images: finalDriveImages });
+                    principalRecordsData.unshift({ id: principalRecordsData.length + 1, title, category, date, executed: true, images: currentImagesList });
                 } else if(currentSection === 'professionalDev') {
-                    professionalDevRecordsData.unshift({ id: professionalDevRecordsData.length + 1, title, category, date, executed: true, images: finalDriveImages });
+                    professionalDevRecordsData.unshift({ id: professionalDevRecordsData.length + 1, title, category, date, executed: true, images: currentImagesList });
                 } else if(currentSection === 'teacherPerfRecords') {
-                    teacherPerfRecordsData.unshift({ id: teacherPerfRecordsData.length + 1, title, category, date, executed: true, images: finalDriveImages });
+                    teacherPerfRecordsData.unshift({ id: teacherPerfRecordsData.length + 1, title, category, date, executed: true, images: currentImagesList });
                 } else if(currentSection === 'schoolAffairs') {
-                    schoolAffairsRecordsData.unshift({ id: schoolAffairsRecordsData.length + 1, title, category, date, executed: true, images: finalDriveImages });
+                    schoolAffairsRecordsData.unshift({ id: schoolAffairsRecordsData.length + 1, title, category, date, executed: true, images: currentImagesList });
                 } else if(currentSection === 'eduAffairs') {
-                    eduAffairsRecordsData.unshift({ id: eduAffairsRecordsData.length + 1, title, category, date, executed: true, images: finalDriveImages });
+                    eduAffairsRecordsData.unshift({ id: eduAffairsRecordsData.length + 1, title, category, date, executed: true, images: currentImagesList });
                 } else if(currentSection === 'counselor') {
-                    counselorRecordsData.unshift({ id: counselorRecordsData.length + 1, title, category, date, executed: true, images: finalDriveImages });
+                    counselorRecordsData.unshift({ id: counselorRecordsData.length + 1, title, category, date, executed: true, images: currentImagesList });
                 } else if(currentSection === 'studentAffairs') {
-                    studentAffairsRecordsData.unshift({ id: studentAffairsRecordsData.length + 1, title, category, date, executed: true, images: finalDriveImages });
+                    studentAffairsRecordsData.unshift({ id: studentAffairsRecordsData.length + 1, title, category, date, executed: true, images: currentImagesList });
                 } else if(currentSection === 'evalSpecialist') {
-                    evalSpecialistRecordsData.unshift({ id: evalSpecialistRecordsData.length + 1, title, category, date, executed: true, images: finalDriveImages });
+                    evalSpecialistRecordsData.unshift({ id: evalSpecialistRecordsData.length + 1, title, category, date, executed: true, images: currentImagesList });
                 } else if(currentSection === 'records') {
-                    records.unshift({ title, category, date, status: 'محدث', images: finalDriveImages });
+                    records.unshift({ title, category, date, status: 'محدث', images: currentImagesList });
                 } else if(currentSection === 'programs') {
-                    programs.unshift({ title, category, date, status: 'قيد التنفيذ', images: finalDriveImages });
+                    programs.unshift({ title, category, date, status: 'قيد التنفيذ', images: currentImagesList });
                 } else {
                     if(readinessData[currentSection]) {
-                        readinessData[currentSection].tasks.push({ desc: title, date, status: 'نفذت ✓', images: finalDriveImages });
+                        readinessData[currentSection].tasks.push({ desc: title, date, status: 'نفذت ✓', images: currentImagesList });
                     }
                 }
             }
 
-            submitBtn.innerText = 'حفظ التغييرات';
-            submitBtn.disabled = false;
             closeModal();
             renderTable();
         }
@@ -1615,4 +1556,3 @@
     </script>
 </body>
 </html>
-
