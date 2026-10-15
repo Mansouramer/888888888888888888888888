@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>النظام الشامل لإدارة السجلات وخطة الاستعداد - الابتدائية الأولى بنات</title>
+    <title>بوابة القيادة الرقمية</title>
     <!-- استدعاء مكتبة التصميم السريع Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -167,9 +167,6 @@
         <button class="bnav-btn role-restricted" data-allowed="principal" onclick="switchSection('teacherPerf')" data-sec="teacherPerf">
             <span class="bnav-ic">⭐</span><span>الأداء</span>
         </button>
-        <button class="bnav-btn role-restricted" data-allowed="principal" onclick="switchSection('pdImpact')" data-sec="pdImpact">
-            <span class="bnav-ic">💡</span><span>التطوير</span>
-        </button>
         <button class="bnav-btn role-restricted" data-allowed="principal" onclick="switchSection('records')" data-sec="records">
             <span class="bnav-ic">📂</span><span>السجلات</span>
         </button>
@@ -284,7 +281,7 @@
     <header class="mb-4 bg-white/60 backdrop-blur-md p-3 sm:p-6 rounded-2xl shadow-sm border-r-4 border-blue-600 flex flex-col lg:flex-row justify-between items-center gap-4 border border-white/40 no-print">
         <div class="text-right w-full lg:w-auto">
             <div id="schoolHeaderLabel" class="text-[11px] sm:text-xs text-blue-700 font-bold mb-1">المملكة العربية السعودية |وزارة التعليم| الابتدائية الأولى بنات</div>
-            <h1 class="text-lg sm:text-2xl font-bold text-gray-900">النظام الشامل لإدارة المدرسة والسجلات</h1>
+            <h1 class="text-lg sm:text-2xl font-bold text-gray-900">بوابة القيادة الرقمية</h1>
             <p id="principalHeaderLabel" class="text-xs sm:text-sm text-indigo-800 mt-1 font-bold">مديرة المدرسة / فلانة</p>
         </div>
 
@@ -335,7 +332,6 @@
                     <button onclick="openSectionModal('principal')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded-lg text-xs font-medium transition shadow-sm">➕ إضافة</button>
                 </div>
                 <div onclick="switchSection('principal')" class="p-2 hover:bg-indigo-100/50 rounded-xl text-xs cursor-pointer font-bold text-indigo-800">📂 فتح كافة سجلات المديرة بالأسفل</div>
-                <div onclick="switchSection('pdImpact')" class="p-2 hover:bg-violet-100/60 rounded-xl text-xs cursor-pointer font-bold text-violet-800 flex items-center gap-1.5">💡 سجل متابعة أثر التطوير المهني للمعلمات</div>
             </div>
         </div>
 
@@ -638,7 +634,57 @@
             </form>
         </div>
     </div>
-
+    <!-- نافذة إضافة مؤشر استدامة -->
+    <div id="sustAddModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden justify-center items-center p-3 sm:p-4 z-50">
+        <div class="bg-white/90 backdrop-blur-md rounded-2xl p-4 sm:p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto mx-2 border border-white/40">
+            <h3 class="text-lg sm:text-xl font-bold text-amber-900 mb-4">➕ إضافة مؤشر جديد (استدامة التميز)</h3>
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">رقم المؤشر</label>
+                        <input type="text" id="sustNewId" placeholder="مثال: 5-1-1-1" class="w-full border border-gray-200/60 rounded-xl px-3 py-2 text-sm bg-white/50 focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">نسبة الأداء %</label>
+                        <input type="number" id="sustNewPerf" min="0" max="100" step="0.01" value="0" class="w-full border border-gray-200/60 rounded-xl px-3 py-2 text-sm bg-white/50 focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">المجال (اختر أو اكتب مجالاً جديداً)</label>
+                    <input type="text" id="sustNewDomain" list="sustDomainList" class="w-full border border-gray-200/60 rounded-xl px-3 py-2 text-sm bg-white/50 focus:outline-none focus:border-amber-500">
+                    <datalist id="sustDomainList"></datalist>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">اسم المؤشر</label>
+                    <input type="text" id="sustNewIndicator" class="w-full border border-gray-200/60 rounded-xl px-3 py-2 text-sm bg-white/50 focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">السجل المطلوب</label>
+                    <textarea id="sustNewRecord" rows="2" class="w-full border border-gray-200/60 rounded-xl px-3 py-2 text-sm bg-white/50 focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">المسؤولة</label>
+                        <input type="text" id="sustNewResponsible" class="w-full border border-gray-200/60 rounded-xl px-3 py-2 text-sm bg-white/50 focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">الدورية</label>
+                        <select id="sustNewFreq" class="w-full border border-gray-200/60 rounded-xl px-3 py-2 text-sm bg-white/50 focus:outline-none focus:border-amber-500">
+                            <option>أسبوعي</option><option selected>شهري</option><option>فصلي</option><option>سنوي</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">الشواهد المطلوبة (نص)</label>
+                    <input type="text" id="sustNewEvidence" class="w-full border border-gray-200/60 rounded-xl px-3 py-2 text-sm bg-white/50 focus:outline-none focus:border-amber-500">
+                </div>
+                <div class="flex justify-end gap-3 pt-3 border-t border-gray-200/50">
+                    <button type="button" onclick="closeSustAddModal()" class="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-white/60 transition">إلغاء</button>
+                    <button type="button" onclick="saveSustIndicator()" class="px-5 py-2 rounded-xl text-sm bg-amber-600 text-white hover:bg-amber-700 transition">حفظ المؤشر</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- السكريبت البرمجي -->
     <script>
       const cfg = window.SCHOOL_CFG || {};
@@ -1672,17 +1718,38 @@ const schoolConfig = {
             else switchSection('teacherPerf');
         }
 
-        function saveDataLocally() {
-            const dataToSave = { principalRecordsData, professionalDevRecordsData, teacherPerfRecordsData, schoolAffairsRecordsData, eduAffairsRecordsData, counselorRecordsData, studentAffairsRecordsData, evalSpecialistRecordsData, records, programs, readinessData, teachersPerformanceData, sustainabilityRecords };
-            try {
-                localStorage.setItem('dawood_school_system_backup', JSON.stringify(dataToSave));
-                fetch(GOOGLE_DRIVE_WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ type: 'FULL_BACKUP', data: dataToSave })
-                }).catch(e => {});
-            } catch(e) {}
+       let lastSynced = {};
+let cloudBaselineReady = false;
+
+function snapshotKeys() {
+    const all = { principalRecordsData, professionalDevRecordsData, teacherPerfRecordsData, schoolAffairsRecordsData, eduAffairsRecordsData, counselorRecordsData, studentAffairsRecordsData, evalSpecialistRecordsData, records, programs, teachersPerformanceData, sustainabilityRecords };
+    const out = {};
+    Object.keys(all).forEach(k => out[k] = JSON.stringify(all[k]));
+    Object.keys(readinessData).forEach(s => out['readinessData::' + s] = JSON.stringify(readinessData[s]));
+    return out;
+}
+
+function markSynced() { lastSynced = snapshotKeys(); cloudBaselineReady = true; }
+
+function saveDataLocally() {
+    if (!GOOGLE_DRIVE_WEB_APP_URL) { console.warn('رابط السحابة فارغ'); return; }
+    if (!cloudBaselineReady) { console.warn('لم يتم الجلب من السحابة بعد، تم إيقاف الحفظ'); return; }
+
+    const now = snapshotKeys();
+    Object.keys(now).forEach(k => {
+        if (now[k] === lastSynced[k]) return;
+        let key = k, data = JSON.parse(now[k]);
+        if (k.startsWith('readinessData::')) {
+            key = 'readinessData';
+            data = { [k.split('::')[1]]: data };
         }
+        fetch(GOOGLE_DRIVE_WEB_APP_URL, {
+            method: 'POST', mode: 'no-cors',
+            body: JSON.stringify({ type: 'SECTION_SAVE', key, data })
+        }).then(() => { lastSynced[k] = now[k]; })
+          .catch(err => console.error('فشل الحفظ السحابي', k, err));
+    });
+}
 
         function resetDefaultData() {
             if(confirm('هل أنت متأكد من إعادة ضبط البيانات واستعادة السجلات الافتراضية؟ سيتم تحديث الصفحة.')) {
@@ -1708,17 +1775,16 @@ const schoolConfig = {
             reader.readAsText(file);
         }
 
-        async function syncDataFromCloud() {
-            try {
-                const response = await fetch(GOOGLE_DRIVE_WEB_APP_URL);
-                const cloudData = await response.json();
-                if (cloudData && cloudData.dataToSave) {
-                    const parsed = cloudData.dataToSave;
-                    applyLoadedData(parsed);
-                    localStorage.setItem('dawood_school_system_backup', JSON.stringify(parsed));
-                }
-            } catch(e) {}
-        }
+      async function syncDataFromCloud() {
+    try {
+        const driveUrl = (window.SCHOOL_CFG && window.SCHOOL_CFG.driveUrl) || localStorage.getItem('schoolDriveUrl');
+        if (!driveUrl) return;
+        const response = await fetch(driveUrl + '?t=' + Date.now(), { cache: 'no-store' });
+        const cloudData = await response.json();
+        if (cloudData && cloudData.dataToSave) applyLoadedData(cloudData.dataToSave);
+        markSynced(); // ← هذا السطر المفقود، وبه يبدأ الحفظ
+    } catch (e) { console.warn('تعذر جلب السحابة', e); }
+}
 
         async function manualSyncFromCloud() {
             const btn = event.target;
@@ -1780,7 +1846,7 @@ const schoolConfig = {
                         parsed.readinessData[key].tasks = fixImages(parsed.readinessData[key].tasks);
                     }
                 }
-                readinessData = parsed.readinessData;
+             readinessData = Object.assign({}, readinessData, parsed.readinessData);
             }
         }
 
@@ -1815,6 +1881,11 @@ const schoolConfig = {
                 document.getElementById('loginModal').classList.remove('hidden');
                 document.getElementById('loginModal').classList.add('flex');
             }
+// حفظ رابط الدرايف الممرر من السيرفر محلياً قبل المزامنة لضمان عدم ضياعه
+if (window.SCHOOL_CFG && window.SCHOOL_CFG.driveUrl) {
+    localStorage.setItem('schoolDriveUrl', window.SCHOOL_CFG.driveUrl);
+}
+
 
             await syncDataFromCloud();
             renderTable();
@@ -1822,18 +1893,7 @@ const schoolConfig = {
             const savedBg = localStorage.getItem('school_bg_pattern');
             if(savedBg) changeBackground(savedBg);
         }
-
-        function exportDataFile() {
-            const dataToSave = { principalRecordsData, professionalDevRecordsData, teacherPerfRecordsData, schoolAffairsRecordsData, eduAffairsRecordsData, counselorRecordsData, studentAffairsRecordsData, evalSpecialistRecordsData, records, programs, readinessData, teachersPerformanceData, sustainabilityRecords };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToSave, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "Dawood_School_Backup_2026.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
+       
         function changeBackground(type) {
             const body = document.getElementById('pageBody');
             body.classList.remove('bg-theme-blue', 'bg-theme-emerald', 'bg-theme-amber');
@@ -2096,7 +2156,18 @@ const schoolConfig = {
                 img.onerror = () => resolve(base64Str);
             });
         }
-
+async function uploadImage(dataUrl) {
+    if (!GOOGLE_DRIVE_WEB_APP_URL) return dataUrl;
+    try {
+        const folder = activeUserRole === 'teacher' ? 'teacher_' + (loggedTeacherName || '') : currentSection;
+        const r = await fetch(GOOGLE_DRIVE_WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({ type: 'IMAGE_UPLOAD', folder, dataUrl })
+        });
+        const j = await r.json();
+        return j.ok ? j.url : dataUrl;
+    } catch (e) { return dataUrl; }
+}
         async function previewTeacherImages(event) {
             const files = event.target.files;
             if (files && files.length > 0) {
@@ -2104,7 +2175,7 @@ const schoolConfig = {
                 for (let file of files) {
                     const reader = new FileReader();
                     reader.onload = async function(e) {
-                        const compressed = await compressImage(e.target.result);
+                        const compressed = await uploadImage(await compressImage(e.target.result));
                         const now = new Date();
                         const formattedDate = now.toLocaleDateString('ar-SA') + ' | ' + now.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
                         teacherEvImagesList.push({ src: compressed, date: formattedDate });
@@ -2169,27 +2240,6 @@ const schoolConfig = {
             const container = document.getElementById('tableContainer');
             let html = '';
 
-            if (currentSection === 'pdImpact') {
-                html = `
-                    <div class="mb-4 bg-gradient-to-l from-violet-100/60 to-indigo-100/40 backdrop-blur-sm p-3 sm:p-4 rounded-xl border border-violet-200/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-2xl bg-violet-100 p-2 rounded-xl">💡</span>
-                            <div>
-                                <h2 class="text-sm sm:text-lg font-bold text-violet-900">سجل متابعة أثر التطوير المهني للمعلمات</h2>
-                                <p class="text-[11px] sm:text-xs text-violet-800 mt-1">نموذج تفاعلي لقياس الأثر (قبلي / بعدي) لكل معلمة — يُحفظ تلقائيًا داخل متصفحك</p>
-                            </div>
-                        </div>
-                        <button onclick="printPdImpactFrame()" class="no-print w-full sm:w-auto bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm flex items-center justify-center gap-1">
-                            <span>🖨️</span><span>طباعة السجل</span>
-                        </button>
-                    </div>
-                    <iframe id="pdImpactFrame" title="سجل متابعة أثر التطوير المهني" style="width:100%; min-height:1400px; border:none; border-radius:16px; background:#eef3f2;"></iframe>
-                `;
-                container.innerHTML = html;
-                loadPdImpactFrame();
-                updateDashboardStats();
-                return;
-            }
 
             if (currentSection === 'sustainability') {
                 renderSustainabilitySection(container);
@@ -2409,8 +2459,7 @@ const schoolConfig = {
                         </div>
                         <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                             ${currentSection === 'teacherPerfRecords' ? '<button onclick="switchSection(\'teacherPerf\')" class="no-print bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">⭐ العودة لتقييم المعلمات</button>' : ''}
-                            ${currentSection === 'principal' ? '<button onclick="switchSection(\'pdImpact\')" class="no-print bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">💡 سجل أثر التطوير المهني</button>' : ''}
-                            <button onclick="openSectionModal('${currentSection}')" class="no-print w-full sm:w-auto bg-${themeColor}-600 hover:bg-${themeColor}-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm flex items-center justify-center gap-1">
+                                                     <button onclick="openSectionModal('${currentSection}')" class="no-print w-full sm:w-auto bg-${themeColor}-600 hover:bg-${themeColor}-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm flex items-center justify-center gap-1">
                                 <span>➕</span>
                                 <span>إضافة سجل جديد لهذا القسم</span>
                             </button>
@@ -2763,7 +2812,7 @@ const schoolConfig = {
                 for (let file of files) {
                     const reader = new FileReader();
                     reader.onload = async function(e) {
-                        const compressed = await compressImage(e.target.result);
+                        const compressed = await uploadImage(await compressImage(e.target.result));
                         const now = new Date();
                         const formattedDate = now.toLocaleDateString('ar-SA') + ' | ' + now.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
                         currentImagesList.push({ src: compressed, date: formattedDate });
@@ -2782,7 +2831,7 @@ const schoolConfig = {
                 for (let file of files) {
                     const reader = new FileReader();
                     reader.onload = async function(e) {
-                        const compressed = await compressImage(e.target.result);
+                        const compressed = await uploadImage(await compressImage(e.target.result));
                         const now = new Date();
                         const formattedDate = now.toLocaleDateString('ar-SA') + ' | ' + now.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
                         progImagesList.push({ src: compressed, date: formattedDate });
@@ -2893,34 +2942,6 @@ const schoolConfig = {
             }, 500);
         }
 
-        // ====== سجل متابعة أثر التطوير المهني (مضمّن داخل سجلات المديرة) ======
-        // يُحمَّل كمستند مستقل داخل إطار iframe لتفادي أي تعارض في التنسيقات أو السكربتات
-        // مع بقية لوحة التحكم، مع الحفاظ الكامل على طابعه التفاعلي والملوّن الخاص به.
-        function loadPdImpactFrame() {
-            const frame = document.getElementById('pdImpactFrame');
-            if (!frame) return;
-            try {
-                const bytes = Uint8Array.from(atob(PD_IMPACT_HTML_B64), c => c.charCodeAt(0));
-                const htmlStr = new TextDecoder('utf-8').decode(bytes);
-                const blob = new Blob([htmlStr], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                frame.src = url;
-                frame.onload = () => {
-                    try {
-                        const h = frame.contentWindow.document.documentElement.scrollHeight;
-                        frame.style.height = (h + 40) + 'px';
-                    } catch (e) {}
-                };
-            } catch (e) {
-                frame.outerHTML = '<p class="text-center text-red-600 text-sm py-10">تعذر تحميل سجل التطوير المهني.</p>';
-            }
-        }
-
-        function printPdImpactFrame() {
-            const frame = document.getElementById('pdImpactFrame');
-            if (frame && frame.contentWindow) frame.contentWindow.print();
-        }
-
         // ====== سجلات استدامة التميز (46 مؤشرًا) — متابعة تفاعلية بضغطة واحدة ======
         let sustainabilityFilterQuery = '';
         let sustainabilityFilterDomain = '';
@@ -2966,7 +2987,7 @@ const schoolConfig = {
             for (let file of files) {
                 const reader = new FileReader();
                 reader.onload = async function (e) {
-                    const compressed = await compressImage(e.target.result);
+                    const compressed = await uploadImage(await compressImage(e.target.result));
                     const now = new Date();
                     const formattedDate = now.toLocaleDateString('ar-SA') + ' | ' + now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
                     if (!sustainabilityRecords[idx].images) sustainabilityRecords[idx].images = [];
@@ -3004,7 +3025,55 @@ const schoolConfig = {
             document.getElementById('viewImageModal').classList.remove('hidden');
             document.getElementById('viewImageModal').classList.add('flex');
         }
+        function openSustAddModal() {
+            ['sustNewId','sustNewDomain','sustNewIndicator','sustNewRecord','sustNewResponsible','sustNewEvidence']
+                .forEach(id => document.getElementById(id).value = '');
+            document.getElementById('sustNewPerf').value = 0;
+            document.getElementById('sustNewFreq').value = 'شهري';
+            const domains = [...new Set(sustainabilityRecords.map(r => r.domain))];
+            document.getElementById('sustDomainList').innerHTML = domains.map(d => `<option value="${d}">`).join('');
+            document.getElementById('sustAddModal').classList.remove('hidden');
+            document.getElementById('sustAddModal').classList.add('flex');
+        }
 
+        function closeSustAddModal() {
+            document.getElementById('sustAddModal').classList.add('hidden');
+            document.getElementById('sustAddModal').classList.remove('flex');
+        }
+
+        function saveSustIndicator() {
+            const id = document.getElementById('sustNewId').value.trim();
+            const domain = document.getElementById('sustNewDomain').value.trim();
+            const indicator = document.getElementById('sustNewIndicator').value.trim();
+            const perf = parseFloat(document.getElementById('sustNewPerf').value) || 0;
+
+            if (!id || !domain || !indicator) { alert('الرجاء تعبئة رقم المؤشر والمجال واسم المؤشر.'); return; }
+            if (sustainabilityRecords.some(r => String(r.id) === id)) { alert('رقم المؤشر موجود مسبقاً، اختر رقماً آخر.'); return; }
+
+            const classification = perf >= 85 ? 'التميز' : (perf >= 70 ? 'التقدم' : 'الانطلاق');
+            sustainabilityRecords.push({
+                id, domain, indicator, perf, classification,
+                priority: classification === 'التميز' ? 'استدامة' : 'أولوية علاجية',
+                record: document.getElementById('sustNewRecord').value.trim(),
+                responsible: document.getElementById('sustNewResponsible').value.trim(),
+                freq: document.getElementById('sustNewFreq').value,
+                evidence: document.getElementById('sustNewEvidence').value.trim(),
+                status: 'لم يحدد', owner: '', notes: '', images: []
+            });
+            saveDataLocally();
+            closeSustAddModal();
+            renderTable();
+        }
+
+        function deleteSustIndicator(idx) {
+            const r = sustainabilityRecords[idx];
+            if (!r) return;
+            if (confirm(`هل أنت متأكد من حذف المؤشر (${r.id}) ؟ لا يمكن التراجع عن الحذف.`)) {
+                sustainabilityRecords.splice(idx, 1);
+                saveDataLocally();
+                renderTable();
+            }
+        }
         function renderSustainabilitySection(container) {
             const total = sustainabilityRecords.length;
             const counts = { 'متوفر ومحدث': 0, 'يحتاج تحديث': 0, 'غير متوفر': 0, 'لم يحدد': 0 };
@@ -3054,6 +3123,7 @@ const schoolConfig = {
                             <option value="">كل المجالات</option>
                             ${domains.map(d => `<option value="${d}" ${d === sustainabilityFilterDomain ? 'selected' : ''}>${d}</option>`).join('')}
                         </select>
+                        <button onclick="openSustAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap">➕ إضافة مؤشر</button>
                     </div>
                 </div>
                 <div class="overflow-x-auto w-full">
@@ -3069,6 +3139,7 @@ const schoolConfig = {
                             <th class="pb-3 w-32">المسؤولة الفعلية</th>
                             <th class="pb-3 w-40">ملاحظات</th>
                             <th class="pb-3 text-center w-24">شواهد</th>
+                             <th class="pb-3 text-center w-16 no-print">حذف</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200/40 text-xs sm:text-sm">
@@ -3110,12 +3181,15 @@ const schoolConfig = {
                                 <input type="file" accept="image/*" multiple class="hidden" onchange="sustPreviewImages(event, ${idx})">
                             </label>
                         </td>
+                                                <td class="py-3 text-center no-print">
+                            <button onclick="deleteSustIndicator(${idx})" class="text-red-700 hover:text-red-900 text-xs font-bold px-2 py-1 rounded bg-red-100/60 hover:bg-red-100 transition" title="حذف المؤشر">🗑️</button>
+                        </td>
                     </tr>
                 `;
             });
 
             if (shown === 0) {
-                html += `<tr><td colspan="9" class="py-10 text-center text-gray-500 text-xs">لا توجد نتائج مطابقة للبحث/الفلترة الحالية</td></tr>`;
+                html += `<tr><td colspan="10" class="py-10 text-center text-gray-500 text-xs">لا توجد نتائج مطابقة للبحث/الفلترة الحالية</td></tr>`;
             }
 
             html += `</tbody></table></div>`;
@@ -3132,7 +3206,44 @@ function fillSchoolInfo() {
 const IS_FEM = (cfg.gender === 'female');
 const W = '(?![\\u0621-\\u064A])';
 const R = (p, r) => [new RegExp(p, 'g'), r];
-const MALE_RULES = [ R('\\/(?:ة|ات|ي)' + W, '') ];
+const MALE_RULES = [
+    R('\\/(?:ة|ات|ي)' + W, ''),
+
+    // عبارات خاصة أولًا (حتى لا تتأثر "الشؤون التعليمية" و"الأنشطة الطلابية")
+    R('معلمةة', 'معلم'),
+    R('الوكيلة التعليمية' , 'الوكيل التعليمي'),
+    R('المرشدة الطلابية', 'المرشد الطلابي'),
+    R('الموجهة الطلابية', 'الموجه الطلابي'),
+    R('المعلمة المختارة', 'المعلم المختار'),
+    R('المعلمة الحالية', 'المعلم الحالي'),
+    R('المسؤولة الفعلية', 'المسؤول الفعلي'),
+    R('معلمتنا' + W, 'معلمنا'),
+    R('الفاضلة' + W, 'الفاضل'),
+
+    // الجمع
+    R('(متعلم|منسوب|متفوق|موهوب|متعثر|مستفيد|مستجد|متأخر)ات' + W, '$1ين'),
+    R('معلمات' + W, 'معلمين'),
+    R('طالبات' + W, 'طلاب'),
+
+    // المفرد
+    R('معلمة' + W, 'معلم'),
+    R('طالبة' + W, 'طالب'),
+    R('مديرة' + W, 'مدير'),
+    R('وكيلة' + W, 'وكيل'),
+    R('أخصائية' + W, 'أخصائي'),
+    R('موجهة' + W, 'موجه'),
+    R('مرشدة' + W, 'مرشد'),
+    R('منسقة' + W, 'منسق'),
+    R('رائدة' + W, 'رائد'),
+    R('مشرفة' + W, 'مشرف'),
+    R('مسؤولة' + W, 'مسؤول'),
+    R('رئيسة' + W, 'رئيس'),
+
+    // اسم المدرسة والرموز
+    R('بنات' + W, 'بنين'),
+    R('Girls', 'Boys'),
+    R('👩‍🏫', '👨‍🏫')
+];
 const FEM_RULES = [
     R('الطلاب\\/ات', 'الطالبات'), R('المعلمين\\/ات', 'المعلمات'),
     R('\\/ة', 'ة'), R('\\/ات', 'ات'),
