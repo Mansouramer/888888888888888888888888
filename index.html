@@ -252,31 +252,6 @@
         </div>
     </div>
 
-    <!-- لوحة مؤشرات الأداء -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 no-print">
-        <div class="bg-white/60 backdrop-blur-md p-3 sm:p-4 rounded-2xl shadow-sm border border-white/40 flex items-center justify-between">
-            <div>
-                <p class="text-xs text-gray-600 font-medium">إجمالي البرامج المنفذة</p>
-                <h3 id="stat-programs" class="text-2xl font-bold text-blue-600">0</h3>
-            </div>
-            <span class="text-2xl bg-blue-100/50 p-2.5 rounded-xl">🎯</span>
-        </div>
-        <div class="bg-white/60 backdrop-blur-md p-3 sm:p-4 rounded-2xl shadow-sm border border-white/40 flex items-center justify-between">
-            <div>
-                <p class="text-xs text-gray-600 font-medium">إجمالي السجلات العامة</p>
-                <h3 id="stat-records" class="text-2xl font-bold text-emerald-600">0</h3>
-            </div>
-            <span class="text-2xl bg-emerald-100/50 p-2.5 rounded-xl">📂</span>
-        </div>
-        <div class="bg-white/60 backdrop-blur-md p-3 sm:p-4 rounded-2xl shadow-sm border border-white/40 flex items-center justify-between">
-            <div>
-                <p class="text-xs text-gray-600 font-medium">برامج قيد التنفيذ</p>
-                <h3 id="stat-active" class="text-2xl font-bold text-amber-600">0</h3>
-            </div>
-            <span class="text-2xl bg-amber-100/50 p-2.5 rounded-xl">⚡</span>
-        </div>
-    </div>
-
     <!-- رأس الصفحة -->
     <header class="mb-4 bg-white/60 backdrop-blur-md p-3 sm:p-6 rounded-2xl shadow-sm border-r-4 border-blue-600 flex flex-col lg:flex-row justify-between items-center gap-4 border border-white/40 no-print">
         <div class="text-right w-full lg:w-auto">
@@ -703,7 +678,7 @@ const schoolConfig = {
 
         let activeUserRole = localStorage.getItem('dawood_user_role') || null;
         let loggedTeacherName = localStorage.getItem('dawood_logged_teacher') || null;
-        let currentSection = 'teacherPerf';
+        let currentSection = '';
         let editingIndex = null;
         let currentImagesList = [];
         let progImagesList = [];
@@ -1715,7 +1690,7 @@ const schoolConfig = {
             else if (activeUserRole === 'eduAffairs') switchSection('eduAffairs');
             else if (activeUserRole === 'studentAffairs') switchSection('studentAffairs');
             else if (activeUserRole === 'evalSpecialist') switchSection('evalSpecialist');
-            else switchSection('teacherPerf');
+            else switchSection('');
         }
 
        let lastSynced = {};
@@ -1917,13 +1892,6 @@ if (window.SCHOOL_CFG && window.SCHOOL_CFG.driveUrl) {
             document.getElementById('printBodyContent').innerHTML = currentTableHTML;
             window.print();
         }
-
-        function updateDashboardStats() {
-            document.getElementById('stat-programs').innerText = programs.length;
-            document.getElementById('stat-records').innerText = records.length + principalRecordsData.length + professionalDevRecordsData.length;
-            document.getElementById('stat-active').innerText = programs.filter(p => p.status === 'قيد التنفيذ' || p.status === 'نشط' || p.status === 'مخطط له').length;
-        }
-
         function openGlobalSearchModal() {
             document.getElementById('globalSearchInput').value = '';
             document.getElementById('globalSearchResults').innerHTML = '<p class="text-center text-xs text-gray-500 py-8">ابدأ الكتابة في حقل البحث بالأعلى للعثور على العناصر مباشرة...</p>';
@@ -2243,7 +2211,6 @@ async function uploadImage(dataUrl) {
 
             if (currentSection === 'sustainability') {
                 renderSustainabilitySection(container);
-                updateDashboardStats();
                 return;
             }
 
@@ -2329,13 +2296,6 @@ async function uploadImage(dataUrl) {
                 `;
 
                 if (!activeTeacher) {
-                    html += `
-                        <div class="bg-white/40 backdrop-blur-md rounded-2xl border border-white/40 p-12 text-center shadow-sm">
-                            <span class="text-4xl mb-2 inline-block">📌</span>
-                            <h3 class="text-base font-bold text-gray-800">الرجاء اختيار معلمة من القائمة بالأعلى</h3>
-                            <p class="text-xs text-gray-600 mt-1">انقر على خانة الاختيار لعرض بنود التقييم وشواهد المعلمة المطلوبة.</p>
-                        </div>
-                    `;
                 } else {
                     let score = 0;
                     evaluationCriteriaList.forEach(c => {
@@ -2623,7 +2583,6 @@ async function uploadImage(dataUrl) {
             }
 
             container.innerHTML = html;
-            updateDashboardStats();
         }
 
         function viewTeacherEvidenceModalImages(teacherName, critId) {
