@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>بوابة القيادة الرقمية</title>
+    <link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0b1330">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="القيادة الرقمية">
     <!-- استدعاء مكتبة التصميم السريع Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -194,6 +202,9 @@
         <button class="bnav-btn" onclick="openGlobalSearchModal()">
             <span class="bnav-ic">🔍</span><span>بحث</span>
         </button>
+        <button class="bnav-btn install-btn" style="display:none" onclick="installApp()">
+    <span class="bnav-ic">📲</span><span>تثبيت</span>
+</button>
     </nav>
 
     <!-- نافذة تسجيل الدخول -->
@@ -280,6 +291,10 @@
         </div>
 
         <div class="flex flex-wrap items-center justify-end gap-2 w-full lg:w-auto no-print">
+            <button id="installBtn" onclick="installApp()" style="display:none"
+  class="install-btn flex-1 sm:flex-none bg-gradient-to-r from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm items-center justify-center gap-1">
+    <span>📲</span><span>تثبيت التطبيق</span>
+</button>
             <button onclick="openGlobalSearchModal()" class="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition shadow-sm flex items-center justify-center gap-1">
                 <span>🔍</span>
                 <span>بحث شامل</span>
@@ -459,7 +474,7 @@
         <div class="flex items-center justify-center gap-2 flex-wrap w-full sm:w-auto">
             <button onclick="manualSyncFromCloud()" class="flex-1 sm:flex-none bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">🔄 تحديث البيانات</button>
             <button onclick="printReport()" class="flex-1 sm:flex-none bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">🖨️ طباعة التقرير بالترويسة</button>
-            <button onclick="saveDataLocally()" class="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">💾 حفظ</button>
+            <button onclick="saveDataLocally(true)" class="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">💾 حفظ</button>
             <button onclick="exportDataFile()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm">📥 تنزيل نسخة</button>
             <label class="cursor-pointer flex-1 sm:flex-none text-center bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition shadow-sm flex items-center justify-center gap-1">
                 <span>📂 استعادة نسخة</span>
@@ -660,6 +675,74 @@
             </div>
         </div>
     </div>
+    <script src="pwa-loader.js"></script>
+    <script>
+    /* ===== تثبيت التطبيق (PWA) ===== */
+    (function () {
+        var deferredPrompt = null;
+        var isStandalone = function () {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        };
+        var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        function setInstallButtons(show) {
+            document.querySelectorAll('.install-btn').forEach(function (b) {
+                b.style.display = show ? 'flex' : 'none';
+            });
+        }
+
+        function showHelp(html) {
+            var old = document.getElementById('installHelpModal');
+            if (old) old.remove();
+            var d = document.createElement('div');
+            d.id = 'installHelpModal';
+            d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+            d.innerHTML = '<div dir="rtl" style="background:#fffdf6;border:1px solid #bf9b50;border-radius:18px;max-width:380px;width:100%;padding:20px;text-align:right;font-family:inherit;color:#333;box-shadow:0 20px 50px rgba(0,0,0,.5)">' +
+                '<div style="font-weight:800;font-size:16px;color:#7a5a12;margin-bottom:10px">📲 تثبيت التطبيق</div>' +
+                '<div style="font-size:13px;line-height:1.9">' + html + '</div>' +
+                '<button type="button" id="installHelpClose" style="margin-top:14px;width:100%;background:#b8892c;color:#fff;border:0;border-radius:12px;padding:10px;font-weight:700;cursor:pointer">حسناً</button></div>';
+            document.body.appendChild(d);
+            d.addEventListener('click', function (e) { if (e.target === d || e.target.id === 'installHelpClose') d.remove(); });
+        }
+
+        window.installApp = async function () {
+            if (isStandalone()) { showHelp('التطبيق مثبّت ويعمل بالفعل ✅'); return; }
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                try { await deferredPrompt.userChoice; } catch (e) {}
+                deferredPrompt = null;
+                return;
+            }
+            if (isIOS) {
+                showHelp('على الآيفون/الآيباد (من متصفح <b>Safari</b>):<br>1) اضغطي زر المشاركة <b>⬆️</b> في أسفل الشاشة.<br>2) اختاري <b>«إضافة إلى الشاشة الرئيسية»</b>.<br>3) اضغطي <b>«إضافة»</b>.');
+            } else {
+                showHelp('افتحي قائمة المتصفح <b>⋮</b> ثم اختاري <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b>.<br><small style="color:#888">ملاحظة: يلزم فتح الصفحة عبر رابط آمن (HTTPS) ووجود ملف manifest.json بجانب الصفحة.</small>');
+            }
+        };
+
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            setInstallButtons(true);
+        });
+
+        window.addEventListener('appinstalled', function () {
+            deferredPrompt = null;
+            setInstallButtons(false);
+        });
+
+        /* إظهار الأيقونة دائماً ما لم يكن التطبيق مثبّتاً (يشمل الآيفون) */
+        function init() { setInstallButtons(!isStandalone()); }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+
+        if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('sw.js').catch(function () {});
+            });
+        }
+    })();
+    </script>
     <!-- السكريبت البرمجي -->
     <script>
       const cfg = window.SCHOOL_CFG || {};
@@ -668,12 +751,12 @@ const schoolConfig = {
     developerName: "مديرة المدرسة / " + (cfg.principal || "فلانة")
 };
         const rolePasswords = {
-            "principal": "12345",
-            "counselor": "5555",
-            "schoolAffairs": "1111",
-            "eduAffairs": "2222",
-            "studentAffairs": "3333",
-            "evalSpecialist": "4444"
+            "principal": "20302030",
+            "counselor": "55155",
+            "schoolAffairs": "11112222",
+            "eduAffairs": "226622",
+            "studentAffairs": "12344321",
+            "evalSpecialist": "1313"
         };
 
         let activeUserRole = localStorage.getItem('dawood_user_role') || null;
@@ -686,23 +769,13 @@ const schoolConfig = {
         let selectedTeacherIndexForEval = null;
         let targetCriteriaIdForTeacherEv = null;
 
-     const GOOGLE_DRIVE_WEB_APP_URL = cfg.cloudUrl || '';
+   const GOOGLE_DRIVE_WEB_APP_URL = cfg.cloudUrl || cfg.driveUrl || localStorage.getItem('schoolDriveUrl') || '';
         
         let teachersPerformanceData = [
+           
+           
             {
-                name: "أ. فاطمة محمد الغامدي",
-                pin: "1001",
-                evaluations: { 1: true, 2: true, 3: false, 4: true, 5: true, 6: true, 7: true, 8: false, 9: true, 10: true, 11: true },
-                evidences: {}
-            },
-            {
-                name: "أ. نورة عبد الله العمري",
-                pin: "1002",
-                evaluations: { 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: false, 8: true, 9: true, 10: true, 11: false },
-                evidences: {}
-            },
-            {
-                name: "أ. سارة سعيد الأحمدي",
+                name: "أ. المعلم / ة",
                 pin: "1003",
                 evaluations: { 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: true, 8: true, 9: true, 10: true, 11: true },
                 evidences: {}
@@ -1706,11 +1779,12 @@ function snapshotKeys() {
 
 function markSynced() { lastSynced = snapshotKeys(); cloudBaselineReady = true; }
 
-function saveDataLocally() {
-    if (!GOOGLE_DRIVE_WEB_APP_URL) { console.warn('رابط السحابة فارغ'); return; }
-    if (!cloudBaselineReady) { console.warn('لم يتم الجلب من السحابة بعد، تم إيقاف الحفظ'); return; }
+function saveDataLocally(manual) {
+    if (!GOOGLE_DRIVE_WEB_APP_URL) { if (manual) alert('❌ رابط السحابة غير مضبوط.'); return; }
+    if (!cloudBaselineReady) { if (manual) alert('⚠️ لم يتم الجلب من السحابة بعد. اضغط «تحديث البيانات» أولاً.'); return; }
 
     const now = snapshotKeys();
+    const jobs = [];
     Object.keys(now).forEach(k => {
         if (now[k] === lastSynced[k]) return;
         let key = k, data = JSON.parse(now[k]);
@@ -1718,12 +1792,20 @@ function saveDataLocally() {
             key = 'readinessData';
             data = { [k.split('::')[1]]: data };
         }
-        fetch(GOOGLE_DRIVE_WEB_APP_URL, {
-            method: 'POST', mode: 'no-cors',
-            body: JSON.stringify({ type: 'SECTION_SAVE', key, data })
-        }).then(() => { lastSynced[k] = now[k]; })
-          .catch(err => console.error('فشل الحفظ السحابي', k, err));
+        jobs.push(
+            fetch(GOOGLE_DRIVE_WEB_APP_URL, {
+                method: 'POST', mode: 'no-cors',
+                body: JSON.stringify({ type: 'SECTION_SAVE', key, data })
+            }).then(() => { lastSynced[k] = now[k]; })
+        );
     });
+    if (manual) {
+        if (jobs.length === 0) { alert('ℹ️ لا توجد تغييرات جديدة للحفظ.'); return; }
+        Promise.allSettled(jobs).then(r => {
+            const failed = r.filter(x => x.status === 'rejected').length;
+            alert(failed ? '⚠️ فشل حفظ ' + failed + ' قسم، تحقق من الاتصال.' : '✅ تم الحفظ في السحابة.');
+        });
+    }
 }
 
         function resetDefaultData() {
@@ -1732,7 +1814,27 @@ function saveDataLocally() {
                 location.reload();
             }
         }
-
+function exportDataFile() {
+    try {
+        const data = {
+            principalRecordsData, professionalDevRecordsData, teacherPerfRecordsData,
+            schoolAffairsRecordsData, eduAffairsRecordsData, counselorRecordsData,
+            studentAffairsRecordsData, evalSpecialistRecordsData, records, programs,
+            teachersPerformanceData, sustainabilityRecords, readinessData
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'school_backup_' + new Date().toISOString().slice(0, 10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) {
+        alert('❌ فشل تنزيل النسخة: ' + e.message);
+    }
+}
         function importDataFile(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1751,29 +1853,37 @@ function saveDataLocally() {
         }
 
       async function syncDataFromCloud() {
-    try {
-        const driveUrl = (window.SCHOOL_CFG && window.SCHOOL_CFG.driveUrl) || localStorage.getItem('schoolDriveUrl');
-        if (!driveUrl) return;
-        const response = await fetch(driveUrl + '?t=' + Date.now(), { cache: 'no-store' });
-        const cloudData = await response.json();
-        if (cloudData && cloudData.dataToSave) applyLoadedData(cloudData.dataToSave);
-        markSynced(); // ← هذا السطر المفقود، وبه يبدأ الحفظ
-    } catch (e) { console.warn('تعذر جلب السحابة', e); }
+    const driveUrl = GOOGLE_DRIVE_WEB_APP_URL;
+    if (!driveUrl) throw new Error('رابط السحابة غير موجود');
+    const response = await fetch(driveUrl + '?t=' + Date.now(), {
+        cache: 'no-store', redirect: 'follow', credentials: 'omit'
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const cloudData = await response.json();
+    if (cloudData && cloudData.dataToSave) applyLoadedData(cloudData.dataToSave);
+    markSynced();
 }
 
-        async function manualSyncFromCloud() {
-            const btn = event.target;
-            const oldText = btn.innerText;
-            btn.innerText = '⏳ جاري التحديث...';
-            try {
-                await syncDataFromCloud();
-                renderTable();
-                alert('✅ تم تحديث وجلب أحدث البيانات والشواهد من السحابة بنجاح!');
-            } catch(e) {
-                alert('❌ تعذر الاتصال بالسحابة، تحقق من الإنترنت.');
-            }
-            btn.innerText = oldText;
-        }
+async function manualSyncFromCloud(ev) {
+    const e0 = ev || window.event;
+    const btn = e0.currentTarget || e0.target;
+    const oldText = btn.innerText;
+    btn.innerText = '⏳ جاري التحديث...';
+    try {
+        await syncDataFromCloud();
+    } catch (e) {
+        alert('❌ فشل الجلب من السحابة:\n' + (e && e.message ? e.message : e));
+        btn.innerText = oldText;
+        return;
+    }
+    try {
+        renderTable();
+        alert('✅ تم تحديث البيانات من السحابة بنجاح!');
+    } catch (e) {
+        alert('⚠️ تم الجلب لكن فشل العرض:\n' + e.message);
+    }
+    btn.innerText = oldText;
+}
 
         function applyLoadedData(parsed) {
             if(parsed.teachersPerformanceData) {
@@ -1862,7 +1972,7 @@ if (window.SCHOOL_CFG && window.SCHOOL_CFG.driveUrl) {
 }
 
 
-            await syncDataFromCloud();
+                      try { await syncDataFromCloud(); } catch (e) { console.warn('تعذر الجلب', e); }
             renderTable();
 
             const savedBg = localStorage.getItem('school_bg_pattern');
@@ -2538,7 +2648,11 @@ async function uploadImage(dataUrl) {
                 html += `</tbody></table></div>`;
 
             } else {
-                let secData = readinessData[currentSection];
+              let secData = readinessData[currentSection];
+if (!secData) {
+    container.innerHTML = '<p class="text-center text-sm text-gray-600 py-10">اختر قسماً من القائمة بالأعلى للبدء.</p>';
+    return;
+}
                 html = `
                     <h2 class="text-sm sm:text-xl font-bold text-blue-900 mb-4 pb-2 border-b border-gray-200/50">${secData.title} (انقر على المهام لإضافة الشواهد وتاريخ الإضافة)</h2>
                     <div class="overflow-x-auto w-full">
@@ -3246,25 +3360,6 @@ const v = genderize(n.__o);
     });
     document.title = genderize(document.title);
     _gObs.observe(document.body, { childList: true, subtree: true });
-}
-
-// ===== تثبيت التطبيق =====
-let deferredPrompt = null;
-const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
-window.addEventListener('appinstalled', () => { const b = document.getElementById('installBtn'); if (b) b.style.display = 'none'; });
-const _ib = document.getElementById('installBtn');
-if (_ib && !isStandalone()) _ib.style.display = 'flex';
-async function installApp() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-    } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        alert('للتثبيت على الآيفون: اضغط زر المشاركة (⬆️) في سفاري، ثم اختر "إضافة إلى الشاشة الرئيسية".');
-    } else {
-        alert('للتثبيت: افتح قائمة المتصفح (⋮) ثم اختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".');
-    }
 }
 
 try { applyGender(); } catch (e) { console.error(e); }
